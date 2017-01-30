@@ -65,7 +65,7 @@ print.mlth.data.frame<-function(x,digits=NULL,justify='left'){
 			Values<-format(Values,width=nchar(names(l)))
 		} else {
 			Values<-format(l[[1]],
-					digits=digits,na.encode=FALSE,
+					digits=digits,na.encode=TRUE,
 					width=nchar(names(l)))
 		}
 		# If header is not wide enought it is completed by '-'

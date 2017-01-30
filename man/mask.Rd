@@ -34,4 +34,13 @@ Specify a mask based on the matrix or matrix-like object.
 \code{rows}, \code{cols} and \code{singleCells} must take into account if header and row names are included.
 E.g., \code{cols=2} indicates the second column of the matrix when \code{rn=FALSE} and the first column when \code{rn=TRUE}.
 }
+\examples{
+L<-mlth(X=c('A','B','C'),
+		Y=list(N=1:3,M=4:6))
+mask(L)
+mask(L,h=TRUE)
+mask(L,c=2,rows=3)
+mask(L,c=2,rows=3,h=TRUE)
+
+}
 

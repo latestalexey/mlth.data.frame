@@ -1,23 +1,6 @@
-#' @rdname xlsx_method
-#' @title Generic Function \code{write.xlsx}
+#' @title Write Multi-Headed Data Frame to a File
 #' @description
-#' This package defines the generic function \code{write.xlsx}.
-#' \code{write.xlsx.default} is \code{\link[xlsx]{write.xlsx}}.
-#' @export 
-
-write.xlsx<-function(x,...){
-	UseMethod('write.xlsx',x)
-}
-
-#' @rdname xlsx_method
-#' @export
-write.xlsx.default<-function(x,...){
-	xlsx::write.xlsx(x,...)
-}
-
-#' @title Write Multi-Headed Data Frame to Excel File
-#' @description
-#' Write a \code{mlth.data.frame} object to an Excel workbook. The function
+#' Write a \code{mlth.data.frame} object to a file (Excel, csv etc). The function
 #' has many options to define and apply Excel styles, write several tables 
 #' into the same file or same spreadsheet etc.
 #' @param x a \code{mlth.data.frame} object.
@@ -38,7 +21,7 @@ write.xlsx.default<-function(x,...){
 #' @param customStyles a list of the custom styles definitions (see Custom Styles section).
 #' @param noStyles a logical value, when FALSE, the Excel styles are not used.
 #' 
-#' @details Unlike \code{\link[xlsx]{write.xlsx}}, \code{write.xlsx.mlth.data.frame} does not 
+#' @details Unlike \code{\link[xlsx]{write.xlsx}}, \code{write.mlth} does not 
 #' rewrite a spreadsheet completely when \code{append=TRUE}. It can overwrite certain values
 #' if the table overlaps with existing values, though.
 #'
@@ -66,7 +49,7 @@ write.xlsx.default<-function(x,...){
 #' which cells are to be modified and one or more compulsory optional arguments defining the style.
 #' 
 #' \code{mask} must be a logical matrix in which TRUE corresponds to the cells to modify. The size of 
-#' \code{mask} must take into account \code{row.names} and \code{col.names}. E.g., if \code{row.names=TRUE}
+#' \code{mask} must take into account \code{row.names} and \code{col.names}. E.g., if \code{row.names=TRUE},
 #' \code{ncol(mask)} must be \code{ncol(x)+1}, as the row names are written into a separate column.
 #' For the convenience of mask specification a function \code{\link{mask}} was included into the package.
 #' 
@@ -86,21 +69,41 @@ write.xlsx.default<-function(x,...){
 #' 			`Non-parametric`=list(Median=median(x),MAD=mad(x))))
 #' output<-do.call('rbind',output)
 #' row.names(output)<-names(D)
+#' output
 #' 
 #' ## Another way to build such table
 #' output2<-sapply(D,function(x)
-#' 			c(mean(x),sd(x),median(x),mad(x)))
+#'  			c(mean(x),sd(x),median(x),mad(x)))
 #' output2<-mlth(Parametric=list(Mean=output2[1,],SD=output2[2,]),
-#' 			`Non-parametric`=list(Median=output2[3,],MAD=output2[4,]),
-#' 			row.names=names(D))
+#'	 			`Non-parametric`=list(Median=output2[3,],MAD=output2[4,]),
+#' 				row.names=names(D))
+#' output2
+#' 
+#' ## Write the output to an Excel file
+#' write.mlth(output,file='example1.xlsx')
+#' write.mlth(output,file='example1.xlsx',sheetName='Pretty table',
+#' 			append=TRUE,digits=2,apa=TRUE)
+#' ## Write with customized styles
+#' write.mlth(output,file='example1.xlsx',sheetName='Pretty table 2',
+#' 			append=TRUE,digits=2,apa=TRUE,
+#' 			customStyles=list(list(mask=!mask(output,c=1,h=T,rn=T),
+#' 										alignment=list(horizontal='ALIGN_CENTER')),
+#' 							  list(mask=mask(output,c=1,h=T,rn=T),
+#' 										font=list(isBold=TRUE))))
+#' write.mlth(output,file='example1.xlsx',sheetName='Pretty table 2',
+#' 			append=TRUE,digits=2,apa=TRUE,coord=c(13,1),header=FALSE,
+#' 			customStyles=list(list(mask=!mask(output,c=1,h=F,rn=T),
+#' 										alignment=list(horizontal='ALIGN_CENTER')),
+#' 							  list(mask=mask(output,c=1,h=T,rn=T),
+#' 										font=list(isBold=TRUE))))
+#' 
 #' @export
-#' @aliases write.xlsx
+#' @aliases write
 
-write.xlsx.mlth.data.frame<-function(x,file,sheetName='Sheet1',row.names=TRUE,append=FALSE,showNA=TRUE,
+write.mlth<-function(x,file,sheetName='Sheet1',row.names=TRUE,header=TRUE,append=FALSE,showNA=TRUE,
 		digits=numeric(0),data.format=character(0),apa=FALSE,date.format=character(0),
 		coord=c(1,1),customStyles=NULL,noStyles=FALSE){
-	# TODO: inmplement col.names=FALSE
-	# TODO: test on empty table
+	# TODO: choose method depending on file extension
 	library('xlsx')
 	if (append && file.exists(file)) {
 		wb <- loadWorkbook(file)
@@ -112,12 +115,13 @@ write.xlsx.mlth.data.frame<-function(x,file,sheetName='Sheet1',row.names=TRUE,ap
 	if (!exists('sheet',inherits=FALSE) || is.null(sheet))
 		sheet<-createSheet(wb,sheetName=sheetName)
 	
-	rn<-TRUE
+	if (nrow(x)==0)
+		row.names<-FALSE
 	if (row.names)
 		if (length(row.names(x))==0)
 			x<-cbind(mlth(` `=1:nrow(x)),x)
 		else x<-cbind(mlth(` `=row.names(x)),x)
-	
+
 	# Functions to compute height and width of the header
 	computeHeight<-function(L){
 		if (is.list(L)){
@@ -125,40 +129,42 @@ write.xlsx.mlth.data.frame<-function(x,file,sheetName='Sheet1',row.names=TRUE,ap
 		} else 0
 	}	
 	
-	Hrows<-computeHeight(x)
+	Hrows<-ifelse(header,computeHeight(x),0)
 	Hcols<-ncol(x)
 	
-	makeHeader<-function(L){
-		if (is.list(L)){
-			hghts<-sapply(L,computeHeight)
-			
-			Header<-character(0)
-			for (i in 1:length(L)){
-				Bottom<-makeHeader(L[[i]])
-				Top<-matrix(NA,nrow=max(hghts)+1-nrow(Bottom),ncol=ncol(Bottom))
-				Top[nrow(Top),1]<-names(L)[i]
-				Header<-cbind(Header,rbind(Top,Bottom))
-			}
-			return(Header)
-		} else return(matrix(NA,nrow=0,ncol=1))
+	if (header){
+		makeHeader<-function(L){
+			if (is.list(L)){
+				hghts<-sapply(L,computeHeight)
+				
+				Header<-character(0)
+				for (i in 1:length(L)){
+					Bottom<-makeHeader(L[[i]])
+					Top<-matrix(NA,nrow=max(hghts)+1-nrow(Bottom),ncol=ncol(Bottom))
+					Top[nrow(Top),1]<-names(L)[i]
+					Header<-cbind(Header,rbind(Top,Bottom))
+				}
+				return(Header)
+			} else return(matrix(NA,nrow=0,ncol=1))
+		}
+		
+		Header<-makeHeader(x)
+		cb<-CellBlock(sheet,coord[1],coord[2],nrow(Header),ncol(Header))
+		CB.setMatrixData(cb,Header,1,1)
+		
+		headerCoords<-which(!is.na(Header),arr.ind=TRUE)
+		toMerge<-cbind(headerCoords,apply(headerCoords,1,function(x){
+							i<-x[2]
+							while(i<Hcols && is.na(Header[x[1],i+1]))
+								i<-i+1
+							return(i-x[2])
+						}))
+		toMerge<-toMerge[which(toMerge[,3]>0),,drop=FALSE]
+		if (nrow(toMerge)>0)
+			mapply(addMergedRegion,sheet=list(sheet),
+					toMerge[,1]+coord[1]-1,toMerge[,1]+coord[1]-1,
+					toMerge[,2]+coord[2]-1,toMerge[,2]+toMerge[,3]+coord[2]-1)
 	}
-	
-	Header<-makeHeader(x)
-	cb<-CellBlock(sheet,coord[1],coord[2],nrow(Header),ncol(Header))
-	CB.setMatrixData(cb,Header,1,1)
-	
-	headerCoords<-which(!is.na(Header),arr.ind=TRUE)
-	toMerge<-cbind(headerCoords,apply(headerCoords,1,function(x){
-						i<-x[2]
-						while(i<Hcols && is.na(Header[x[1],i+1]))
-							i<-i+1
-						return(i-x[2])
-					}))
-	toMerge<-toMerge[which(toMerge[,3]>0),,drop=FALSE]
-	if (nrow(toMerge)>0)
-		mapply(addMergedRegion,sheet=list(sheet),
-				toMerge[,1]+coord[1]-1,toMerge[,1]+coord[1]-1,
-				toMerge[,2]+coord[2]-1,toMerge[,2]+toMerge[,3]+coord[2]-1)
 	
 	addDataFrame(as.data.frame(x),sheet,col.names=FALSE,row.names=FALSE,
 			startRow=coord[1]+Hrows,startCol=coord[2])
@@ -213,23 +219,31 @@ write.xlsx.mlth.data.frame<-function(x,file,sheetName='Sheet1',row.names=TRUE,ap
 	}	
 	
 	# Define and write styles
-	# Small auxiliary function to make logic matrices
-	Styles<-list(
-			HeaderStyle=list(mask=mask(x,1:Hrows,h=TRUE),
-					dataFormat=NULL,
-					alignment=list(horizontal='ALIGN_CENTER'),
-					border=NULL,
-					fill=NULL,
-					font=NULL,
-					cellProtection=NULL),
-			DataStyle=list(mask=!mask(x,1:Hrows,h=TRUE),
-					dataFormat=NULL,
-					alignment=NULL,
-					border=NULL,
-					fill=NULL,
-					font=NULL,
-					cellProtection=NULL)
-	)
+	if (header)		
+		Styles<-list(
+				HeaderStyle=list(mask=mask(x,1:Hrows,h=TRUE),
+						dataFormat=NULL,
+						alignment=list(horizontal='ALIGN_CENTER'),
+						border=NULL,
+						fill=NULL,
+						font=NULL,
+						cellProtection=NULL),
+				DataStyle=list(mask=!mask(x,1:Hrows,h=TRUE),
+						dataFormat=NULL,
+						alignment=NULL,
+						border=NULL,
+						fill=NULL,
+						font=NULL,
+						cellProtection=NULL))
+	else
+		Styles<-list(
+				DataStyle=list(mask=mask(x,1:nrow(x)),
+						dataFormat=NULL,
+						alignment=NULL,
+						border=NULL,
+						fill=NULL,
+						font=NULL,
+						cellProtection=NULL))
 	
 	
 	updateStyles<-function(Styles,mask,...){
@@ -271,27 +285,34 @@ write.xlsx.mlth.data.frame<-function(x,file,sheetName='Sheet1',row.names=TRUE,ap
 	
 	for (i in 1:length(data.format))
 		if (!is.na(data.format[i]))
-			Styles<-updateStyles(Styles,mask(x,s=list(list(Hrows+1:nrow(x),i)),h=TRUE),
+			Styles<-updateStyles(Styles,mask(x,s=list(list(Hrows+1:nrow(x),i)),h=header),
 					dataFormat=list(x=data.format[i]))		
 	
 	
 	if (apa){
-		if (Hrows==1)
+		if (!header)
+			Styles<-updateStyles(Styles,mask(x,1,h=FALSE),
+					border=list(position='TOP'))
+		else if (Hrows==1)
 			Styles<-updateStyles(Styles,mask(x,1,h=TRUE),
 					border=list(position=c('TOP','BOTTOM')))
 		else {
 			Styles<-updateStyles(Styles,mask(x,1,h=TRUE),
-					border=list(position=c('TOP')))
+					border=list(position='TOP'))
 			Styles<-updateStyles(Styles,mask(x,Hrows,h=TRUE),
-					border=list(position=c('BOTTOM')))
+					border=list(position='BOTTOM'))
 		}
-		Styles<-updateStyles(Styles,mask(x,Hrows+nrow(x),h=TRUE),
-				border=list(position=c('BOTTOM')))
+		Styles<-updateStyles(Styles,mask(x,Hrows+nrow(x),h=header),
+				border=list(position='BOTTOM'))
 	}
 	
 	if (length(customStyles)>0)
 		for (i in customStyles)
-			Styles<-do.call('updateStyles',c(Styles=list(Styles),i))
+			if (!identical(dim(i$mask),dim(mask(x,h=header))))
+				warning('The mask of a custom style does not match the size of the table')
+			else
+				Styles<-do.call('updateStyles',c(Styles=list(Styles),i))			
+
 	
 	cells<-getCells(getRows(sheet,coord[1]+1:(nrow(x)+Hrows)-1),coord[2]+1:ncol(x)-1,simplify=FALSE)
 	cells<-do.call('rbind',cells)
@@ -339,6 +360,14 @@ write.xlsx.mlth.data.frame<-function(x,file,sheetName='Sheet1',row.names=TRUE,ap
 #' @details 
 #' \code{rows}, \code{cols} and \code{singleCells} must take into account if header and row names are included.
 #' E.g., \code{cols=2} indicates the second column of the matrix when \code{rn=FALSE} and the first column when \code{rn=TRUE}.
+#' 
+#' @examples
+#' L<-mlth(X=c('A','B','C'),
+#' 		Y=list(N=1:3,M=4:6))
+#' mask(L)
+#' mask(L,h=TRUE)
+#' mask(L,c=2,rows=3)
+#' mask(L,c=2,rows=3,h=TRUE)
 #' 
 #' @export
 

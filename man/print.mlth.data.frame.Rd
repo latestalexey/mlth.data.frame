@@ -5,17 +5,30 @@
 \alias{print.mlth.data.frame}
 \title{Print Multi-Headed Data Frame}
 \usage{
-\method{print}{mlth.data.frame}(x, ...)
+\method{print}{mlth.data.frame}(x, digits = NULL, justify = "left")
 }
 \arguments{
 \item{x}{a \code{mlth.data.frame} object.}
 
-\item{...}{other arguments: \code{digits} - number of digits after decimal point 
-(default NULL, same as for \code{\link{print.data.frame}}); 
-\code{justify} - justify header left, right or centre 
+\item{digits}{number of digits after decimal point 
+(default NULL, same as for \code{\link{print.data.frame}}).
+The value is passed to \code{\link{format}} when printing the values,
+work the same way as for \code{data.frame}.}
+
+\item{justify}{justify header left, right or centre 
 (default 'left', same as 'none').}
 }
 \description{
 The method to print a \code{mlth.data.frame} object.
+}
+\examples{
+(L<-mlth(X=c('A','B','C'),
+		Y=list(N=1:3,M=4:6)))
+
+print(L,justify='centre')
+
+M<-mlth(A=rnorm(10),
+		B=list(C=rnorm(10),D=rnorm(10)))
+
 }
 

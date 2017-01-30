@@ -56,8 +56,13 @@ L[['Y']]
 L$Y ## Same as L[['Y']]
 L$Y$M
 
+L[1:2,] ## Select rows
+
+## Select using a list structure
 namesList(L)
 L[[list(Y=c('N','M','N'),'X')]]
+selectByList(L,list(Y=c('N','M','N'),'X')) # Same
+L[1:2,list(Y=c('N','M','N'),'X')]
 
 }
 

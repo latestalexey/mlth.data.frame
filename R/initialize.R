@@ -169,12 +169,15 @@ row.names.mlth.data.frame<-function(x){
 
 #' @export
 `row.names<-.mlth.data.frame`<-function(x,value){
-	if (length(value)!=0 && length(value)!=nrow(x))
-		stop('The length of row.names must be nrow(x) or 0')
-	if (anyDuplicated(value)!=0)
-		stop('The row.names must be unique')
-	if (length(value)!=0 && !is.integer(value))
-		value<-as.character(value)
+	if (length(value)!=0){
+		if (length(value)!=nrow(x))
+			stop('The length of row.names must be nrow(x) or 0')
+		if (!is.integer(value))
+			value<-as.character(value)
+		value[which(is.na(value))]<-'NA'
+		value<-make.unique(value)
+	}
+	
 	attr(x,'row.names')<-value
 	return(x)
 }

@@ -65,42 +65,44 @@
 #' @rdname brackets
 #' @export
 `[.mlth.data.frame`<-function(x,i,j){
-	if (missing(j)){
-		if (is.list(i)){
-			selectByList(x,i)
-		} else {
-			outp<-as.list(x)[i]
-			outp<-as.mlth.data.frame(outp,row.names=row.names(x))
-			return(outp) 
+	na<-nargs()
+	mi<-missing(i)
+	mj<-missing(j)
+	
+	if (na==1)		# A[]	-> A
+		return(x)
+	
+	if (na==2){		# A[i]	-> as.list(A)[i]
+		if (is.list(i))
+			return(selectByList(x,i))
+		else {
+			outp<-do.call('mlth',as.list(x)[i])
+			row.names(outp)<-row.names(x)
+			return(outp)	
 		}
-	} else {
-		selRows<-function(x,i,rn){
-			if (identical(i,0)) # TODO: fix when i=0, look up inicializaton and as.mlth
-				
-			if (is.list(x)){
-				lapply(x,selRows,i,rn)
-			} else {
-				names(x)<-rn
-				x<-x[i]
-				names(x)<-NULL
-				return(x)
-			}
-		}
-		
-		if (missing(i)){
-			return(x[j])
-		} else {
-			rn<-row.names(x)
-			outp<-selRows(as.list(x[j]),i,rn)			
-			if (length(rn)>0){
-				names(rn)<-rn
-				rn<-rn[i]
-				names(rn)<-NULL
-			}
+	}
+
+	# na==3
+	if (mi){ 
+		if (mj) return(x) # A[,]	-> A
+		else return(x[j]) # A[,j]	-> A[j]
+	} else { 
+		if (mj){ # A[i,]
+			if (chInd<-is.character(i))
+				i<-match(i,row.names(x))
 			
-			outp<-as.mlth.data.frame(outp,row.names=rn)
+			outp<-(function(x,i){
+				if (is.list(x))
+					lapply(x,sys.function(),i)
+				else
+					return(x[i])
+			})(as.list(x),i)
+			
+			outp<-do.call('mlth',outp)
+			row.names(outp)<-if(length(row.names(x))>0 || chInd) row.names(x)[i] 
+									else NULL
 			return(outp)
-		}
+		} else return(x[j][i,]) # A[i,j] -> A[j][,i]
 	}
 }
 
