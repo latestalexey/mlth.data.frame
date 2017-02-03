@@ -1,8 +1,8 @@
 #' @rdname initialize
-#' @title Multi-Headed Data Frames
+#' @title Multi-Header Data Frames
 #'
 #' @description 
-#' Create a multi-headed data frame which is 
+#' Create a multi-header data frame which is 
 #' an hierarchical collection of variables.
 #' 
 #' @aliases mlth
@@ -21,7 +21,7 @@
 #' Each variable or sub-table must have a name, the names must be unique within
 #' the table/sub-table, but not across sub-tables.
 #' 
-#' Unlike \code{data.frame}, a multi-headed data frame cannot have zero columns and non-zero rows
+#' Unlike \code{data.frame}, a multi-header data frame cannot have zero columns and non-zero rows
 #' but can have zero rows and non-zero columns or zero columns and rows.
 #' 
 #' @examples
@@ -105,7 +105,7 @@ mlth.data.frame<-function(...,row.names = NULL,stringsAsFactors = default.string
 mlth<-mlth.data.frame
 
 #' @rdname coerce
-#' @title Coerce to a Multi-Headed Data Frame
+#' @title Coerce to a Multi-Header Data Frame
 #' 
 #' @description 
 #' Functions to check and coerce the object to a \code{mlth.data.frame}.
@@ -116,7 +116,7 @@ mlth<-mlth.data.frame
 #' @param ... other arguments passed \code{mlth.data.frame}.
 #' 
 #' @return 
-#' \code{is.mlth.data.frame} returns a multi-headed data frame.
+#' \code{is.mlth.data.frame} returns a multi-header data frame.
 #' \code{as.mlth.data.frame} returns \code{TRUE} if the object has
 #' "\code{mlth.data.frame}" within its classes and \code{FALSE} otherwise.
 #' 

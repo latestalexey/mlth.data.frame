@@ -6,7 +6,7 @@
 \alias{[[.mlth.data.frame}
 \alias{namesList}
 \alias{selectByList}
-\title{Extract or replace Parts of a Multi-Headed Data Frame}
+\title{Extract or replace Parts of a Multi-Header Data Frame}
 \usage{
 \method{[[}{mlth.data.frame}(x, i)
 
@@ -21,7 +21,7 @@ selectByList(x, N)
 \arguments{
 \item{x, object}{a \code{mlth.data.frame} object.}
 
-\item{i, j}{indices specifying elements to extract or replace. 
+\item{i, j}{indices specifying elements to extract. 
 Details in \link[base]{Extract} and \code{\link[base]{Extract.data.frame}}.
 The list structure can be used to extract or re-arrange a multi-headed data frame,
 see Details and Examples.}
@@ -33,8 +33,9 @@ spaces or special characters).}
 See Details section.}
 }
 \description{
-The methods to extract and to substitute parts of a multi-headed data frame.
-Work the same way as the \code{\link{data.frame}}.
+The methods to extract parts of a multi-headed data frame.
+Work the same way as the \code{\link{data.frame}}. The \code{[<-'} and \code{[[<-}
+are to be implemented.
 }
 \details{
 The function \code{namesList} returns the list representing the structure of

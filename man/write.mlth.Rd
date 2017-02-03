@@ -3,7 +3,7 @@
 \name{write.mlth}
 \alias{write}
 \alias{write.mlth}
-\title{Write Multi-Headed Data Frame to a File}
+\title{Write Multi-Header Data Frame to a File}
 \usage{
 write.mlth(x, file, sheetName = "Sheet1", row.names = TRUE, header = TRUE,
   append = FALSE, showNA = TRUE, digits = numeric(0),
@@ -44,7 +44,8 @@ definitions, see Data Formats section).}
 \description{
 Write a \code{mlth.data.frame} object to a file (Excel, csv etc). The function
 has many options to define and apply Excel styles, write several tables 
-into the same file or same spreadsheet etc.
+into the same file or same spreadsheet etc. The methods to write into other than Excel
+formats are to be implemented.
 }
 \details{
 Unlike \code{\link[xlsx]{write.xlsx}}, \code{write.mlth} does not 

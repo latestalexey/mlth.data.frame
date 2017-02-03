@@ -3,7 +3,7 @@
 \name{mlth.data.frame}
 \alias{mlth}
 \alias{mlth.data.frame}
-\title{Multi-Headed Data Frames}
+\title{Multi-Header Data Frames}
 \usage{
 mlth.data.frame(..., row.names = NULL,
   stringsAsFactors = default.stringsAsFactors(), defaultName = "X",
@@ -29,7 +29,7 @@ length as the variables.}
 \code{mlth.data.frame} object
 }
 \description{
-Create a multi-headed data frame which is 
+Create a multi-header data frame which is 
 an hierarchical collection of variables.
 }
 \details{
@@ -38,7 +38,7 @@ Each variable must be a vector of atomic data type (e.g., POSIX date will not wo
 Each variable or sub-table must have a name, the names must be unique within
 the table/sub-table, but not across sub-tables.
 
-Unlike \code{data.frame}, a multi-headed data frame cannot have zero columns and non-zero rows
+Unlike \code{data.frame}, a multi-header data frame cannot have zero columns and non-zero rows
 but can have zero rows and non-zero columns or zero columns and rows.
 }
 \examples{

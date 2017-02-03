@@ -1,8 +1,9 @@
-#' @title Write Multi-Headed Data Frame to a File
+#' @title Write Multi-Header Data Frame to a File
 #' @description
 #' Write a \code{mlth.data.frame} object to a file (Excel, csv etc). The function
 #' has many options to define and apply Excel styles, write several tables 
-#' into the same file or same spreadsheet etc.
+#' into the same file or same spreadsheet etc. The methods to write into other than Excel
+#' formats are to be implemented.
 #' @param x a \code{mlth.data.frame} object.
 #' @param file the path to the output file.
 #' @param sheetName the name of the spreadsheet to write the table.

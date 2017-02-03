@@ -3,7 +3,7 @@
 \name{print.mlth.data.frame}
 \alias{print}
 \alias{print.mlth.data.frame}
-\title{Print Multi-Headed Data Frame}
+\title{Print Multi-Header Data Frame}
 \usage{
 \method{print}{mlth.data.frame}(x, digits = NULL, justify = "left")
 }

@@ -1,4 +1,4 @@
-#' @title Print Multi-Headed Data Frame
+#' @title Print Multi-Header Data Frame
 #' @description 
 #' The method to print a \code{mlth.data.frame} object.
 #' 

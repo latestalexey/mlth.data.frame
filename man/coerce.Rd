@@ -6,7 +6,7 @@
 \alias{as.mlth.data.frame.default}
 \alias{as.mlth.data.frame.list}
 \alias{is.mlth.data.frame}
-\title{Coerce to a Multi-Headed Data Frame}
+\title{Coerce to a Multi-Header Data Frame}
 \usage{
 is.mlth.data.frame(x)
 
@@ -27,7 +27,7 @@ length as the variables.}
 \item{...}{other arguments passed \code{mlth.data.frame}.}
 }
 \value{
-\code{is.mlth.data.frame} returns a multi-headed data frame.
+\code{is.mlth.data.frame} returns a multi-header data frame.
 \code{as.mlth.data.frame} returns \code{TRUE} if the object has
 "\code{mlth.data.frame}" within its classes and \code{FALSE} otherwise.
 }
