@@ -2,7 +2,7 @@
 #' @title Extract or replace Parts of a Multi-Header Data Frame
 #' @description
 #' The methods to extract parts of a multi-headed data frame.
-#' Work the same way as the \code{\link{data.frame}}. The \code{[<-'} and \code{[[<-}
+#' Work the same way as the \code{\link{data.frame}}. The \code{[<-} and \code{[[<-}
 #' are to be implemented.
 #' 
 #' @param x,object a \code{mlth.data.frame} object.

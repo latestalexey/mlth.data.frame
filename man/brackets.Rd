@@ -34,7 +34,7 @@ See Details section.}
 }
 \description{
 The methods to extract parts of a multi-headed data frame.
-Work the same way as the \code{\link{data.frame}}. The \code{[<-'} and \code{[[<-}
+Work the same way as the \code{\link{data.frame}}. The \code{[<-} and \code{[[<-}
 are to be implemented.
 }
 \details{
